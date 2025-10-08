@@ -1,178 +1,58 @@
-body {
-  font-family: "Plus Jakarta Sans", sans-serif !important;
+/* Filter bar container */
+#filters {
   display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-.container {
-  flex: 1;
-  padding: 0 1rem;
-}
-
-/* Navbar */
-.navbar {
-  height: 5rem;
-  background-color: white;
-}
-
-.fa-compass {
-  color: #fe424d;
-  font-size: 2rem;
-}
-
-.nav-link {
-  color: #222222;
-}
-
-/* Footer */
-.f-info-links a {
-  text-decoration: none;
-  color: #222222;
-}
-
-.f-info-links a:hover {
-  text-decoration: underline;
-}
-
-.f-info-links,
-.f-info-socials,
-.f-info-brand {
-  width: 100%;
-  display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  justify-content: center;
+  justify-content: center; /* centers everything */
+  gap: 1.5rem;
+  margin-top: 1.5rem;
   flex-wrap: wrap;
 }
 
-.f-info-socials i {
-  font-size: 1.2rem;
-  margin-right: 1rem;
-}
-
-.f-info {
+/* Individual filter icons */
+.filter {
   text-align: center;
-  min-height: 8rem;
-  background-color: #ebebeb;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
+  opacity: 0.7;
+  transition: opacity 0.3s;
+}
+.filter:hover {
+  opacity: 1;
+  cursor: pointer;
+}
+.filter p {
+  font-size: 0.9rem;
 }
 
-/* Listings */
-.listing-card {
-  border: none !important;
-  margin-bottom: 2rem;
-}
-
-.card-img-top {
-  border-radius: 1rem !important;
-  width: 100%;
-  height: auto;
-  object-fit: cover !important;
-}
-
-.card-body {
-  padding: 0 !important;
-}
-
-.card-text p {
-  font-weight: 400 !important;
-}
-
-.listing-link {
-  text-decoration: none;
-}
-
-.card-img-overlay {
-  opacity: 0;
-  transition: opacity 0.3s ease-in-out;
-}
-
-.card-img-overlay:hover {
-  opacity: 0.2;
+/* Button styling */
+.display-taxes-btn {
+  border: 1px solid #ccc;
+  border-radius: 2rem;
+  padding: 0.6rem 1.2rem;
   background-color: white;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.add-btn,
-.edit-btn {
-  background-color: #fe424d !important;
-  border: none !important;
+.display-taxes-btn:hover {
+  background-color: #f7f7f7;
 }
 
-.show-img {
-  width: 100%;
-  height: auto;
-  max-height: 50vh;
-  object-fit: cover;
-}
-
-.btns {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.show-card {
-  padding-left: 0;
-  padding-right: 0;
-}
-
-/* Map container */
-#map {
-  height: 400px;
-  width: 100%;
-  max-width: 900px;
-  border-radius: 10px;
-  margin: 1rem auto;
-}
-
-/* --- RESPONSIVE DESIGN --- */
+/* Responsive layout */
 @media (max-width: 992px) {
-  #map {
-    height: 350px;
-    width: 90%;
-  }
-
-  .navbar {
-    height: auto;
+  #filters {
+    justify-content: space-around;
   }
 }
 
 @media (max-width: 768px) {
-  #map {
-    height: 300px;
-    width: 100%;
-  }
-
-  .show-img {
-    max-height: 40vh;
-  }
-
-  .btns {
+  #filters {
     flex-direction: column;
-    align-items: stretch;
+    align-items: center;
   }
 
-  .card-img-top {
-    height: 200px;
-  }
-}
-
-@media (max-width: 576px) {
-  #map {
-    height: 250px;
-    width: 100%;
-  }
-
-  .f-info {
-    flex-direction: column;
-    text-align: center;
-    padding: 1rem;
-  }
-
-  .fa-compass {
-    font-size: 1.5rem;
+  .display-taxes-btn {
+    margin-top: 1rem;
   }
 }
