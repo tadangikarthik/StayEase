@@ -22,6 +22,7 @@ const User=require("./models/user.js");
 const listeningRouter=require("./routes/listing.js");
 const reviewRouter=require("./routes/review.js");
 const userRouter=require("./routes/user.js");
+const bookingRouter=require("./routes/booking.js");
   
 
 const dburl=process.env.ATLASDB_URL;
@@ -40,6 +41,7 @@ async function main() {
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(methodOverride("_method"));
 app.engine('ejs',ejsMate);
 app.use(express.static(path.join(__dirname,"/public")));
@@ -53,7 +55,7 @@ const store = MongoStore.create({
   touchAfter: 24 * 3600, // time period in seconds
 });
 
-store.on("error",()=>{
+store.on("error",(err)=>{
   console.log("ERROR in MONGO SESSION STORE",err);
 });
 
@@ -91,6 +93,7 @@ app.use((req,res,next)=>{
 
 app.use("/listings",listeningRouter);
 app.use("/listings/:id/reviews",reviewRouter);
+app.use("/bookings",bookingRouter);
 app.use("/",userRouter);
 
 

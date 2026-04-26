@@ -1,0 +1,174 @@
+<%layout("layouts/boilerplate")%>
+
+<div class="row mt-3 mt-md-5 mb-5">
+  <div class="col-12 col-sm-11 col-md-10 col-lg-8 mx-auto">
+    <div class="card shadow-lg" style="border-radius: 12px; border: none;">
+      <div class="card-header" style="background-color: #fe424d; color: white; border-radius: 12px 12px 0 0; padding: 20px;">
+        <h3 class="m-0" style="font-weight: 700; font-size: clamp(20px, 5vw, 28px);">💳 Complete Your Payment</h3>
+      </div>
+      <div class="card-body p-3 p-sm-4 p-md-5">
+        <div class="row mb-4 mb-md-5 g-3 g-md-4">
+          <div class="col-12 col-md-6">
+            <h5 style="color: #222; font-weight: 700; margin-bottom: 15px; font-size: 16px;">Booking Summary</h5>
+            <p style="margin-bottom: 10px; font-size: 14px;"><strong style="color: #fe424d;">Listing:</strong> <%= booking.listing.title %></p>
+            <p style="margin-bottom: 10px; font-size: 14px;"><strong style="color: #fe424d;">Check-In:</strong> <%= booking.checkInDate.toLocaleDateString() %></p>
+            <p style="margin-bottom: 10px; font-size: 14px;"><strong style="color: #fe424d;">Check-Out:</strong> <%= booking.checkOutDate.toLocaleDateString() %></p>
+            <p style="margin-bottom: 10px; font-size: 14px;"><strong style="color: #fe424d;">Number of Nights:</strong> <%= booking.numberOfNights %></p>
+            <hr style="border: 1px solid #e0e0e0;">
+            <h4 style="color: #fe424d; font-weight: 700; font-size: 18px;"><strong>Total Amount: ₹<%= booking.totalPrice %></strong></h4>
+          </div>
+          <div class="col-12 col-md-6">
+            <img src="<%= booking.listing.image.url %>" alt="<%= booking.listing.title %>" class="img-fluid w-100" style="height: 200px; object-fit: cover; border-radius: 8px;">
+          </div>
+        </div>
+
+        <hr style="border: 1px solid #e0e0e0; margin: 20px 0;">
+
+        <div class="payment-section text-center">
+          <h5 style="color: #222; font-weight: 700; margin-bottom: 20px; font-size: 16px;">Select Payment Method</h5>
+          <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; flex-direction: column; flex-md-row;" class="flex-column flex-md-row">
+            <button id="paymentBtn" class="btn btn-custom-pay w-100 w-md-auto" style="background-color: #fe424d; color: white; padding: 12px 25px; font-weight: 700; border: none; border-radius: 8px; font-size: 14px; cursor: pointer; transition: all 0.3s;">
+              <i class="fas fa-lock"></i> Pay ₹<%= booking.totalPrice %> with Razorpay
+            </button>
+            <a href="/bookings/my/bookings" class="btn btn-outline-pay w-100 w-md-auto" style="padding: 12px 25px; font-weight: 700; border: 2px solid #fe424d; color: #fe424d; border-radius: 8px; font-size: 14px; text-decoration: none; background-color: white; cursor: pointer; transition: all 0.3s;">
+              ← Back to Bookings
+            </a>
+          </div>
+        </div>
+
+        <div id="paymentStatus" class="alert alert-info mt-4" style="display: none; border-left: 4px solid #fe424d; background-color: #e3f2fd; font-size: 14px;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .btn-custom-pay:hover {
+    background-color: #ff2a38 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(254, 66, 77, 0.3);
+  }
+
+  .btn-outline-pay:hover {
+    background-color: #fe424d !important;
+    color: white !important;
+    transform: translateY(-2px);
+  }
+
+  @media (max-width: 576px) {
+    .card-header {
+      padding: 15px !important;
+    }
+    
+    .card-body {
+      padding: 12px !important;
+    }
+
+    h3 {
+      font-size: 20px !important;
+    }
+
+    h5 {
+      font-size: 14px !important;
+    }
+
+    p {
+      font-size: 13px !important;
+    }
+  }
+
+  @media (max-width: 768px) {
+    [style*="flex-md-row"] {
+      flex-direction: column !important;
+    }
+  }
+</style>
+
+<!-- Razorpay Script -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+  const bookingId = '<%= booking._id %>';
+  const totalAmount = <%= booking.totalPrice %>;
+  const userName = '<%= curUser.username %>';
+  const userEmail = '<%= curUser.email %>';
+
+  document.getElementById('paymentBtn').addEventListener('click', async function() {
+    try {
+      // Create Razorpay order
+      const response = await fetch(`/bookings/${bookingId}/create-order`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+
+      if (!data.success) {
+        alert('Error creating payment order');
+        return;
+      }
+
+      const options = {
+        key: data.razorpayKeyId,
+        amount: data.amount,
+        currency: 'INR',
+        name: 'StayEase',
+        description: 'Booking Payment',
+        order_id: data.razorpayOrderId,
+        prefill: {
+          name: userName,
+          email: userEmail,
+        },
+        handler: async function(response) {
+          // Verify payment on server
+          const verifyResponse = await fetch('/bookings/verify-payment', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              razorpayOrderId: data.razorpayOrderId,
+              razorpayPaymentId: response.razorpay_payment_id,
+              razorpaySignature: response.razorpay_signature,
+              bookingId: bookingId,
+            }),
+          });
+
+          const verifyData = await verifyResponse.json();
+
+          if (verifyData.success) {
+            alert('Payment successful! Your booking is confirmed.');
+            window.location.href = `/bookings/${bookingId}`;
+          } else {
+            alert('Payment verification failed: ' + verifyData.message);
+          }
+        },
+        modal: {
+          ondismiss: async function() {
+            // Handle payment cancellation
+            const failureResponse = await fetch('/bookings/payment-failure', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                razorpayOrderId: data.razorpayOrderId,
+                bookingId: bookingId,
+              }),
+            });
+
+            alert('Payment cancelled');
+          },
+        },
+      };
+
+      const rzp = new Razorpay(options);
+      rzp.open();
+
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Error processing payment');
+    }
+  });
+</script>

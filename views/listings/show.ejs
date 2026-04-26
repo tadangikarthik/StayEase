@@ -28,6 +28,19 @@
     </form>
   </body>
   </div>
+    <% } else if(curUser) { %>
+    <div class="btns">
+      <a href="/bookings/create/<%= listing._id %>" class="btn btn-success col-2 offset-3">
+        <i class="fas fa-calendar"></i> Book Now
+      </a>
+      <a href="/bookings/my/bookings" class="btn btn-dark text-white col-2 offset-1">
+        <i class="fas fa-list"></i> My Bookings
+      </a>
+    </div>
+    <% } else { %>
+    <div class="alert alert-warning mt-3" role="alert">
+      <p><strong>Please <a href="/login" class="alert-link">log in</a> to book this listing.</strong></p>
+    </div>
     <% } %>
     <div class="col-8 offset-3 mb-3">
 <% if(curUser){ %>

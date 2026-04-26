@@ -4,8 +4,29 @@ const mapToken = process.env.MAP_BOX;
 const geocodingClient = mbxGeocoding({ accessToken:mapToken });
 
 module.exports.index=async (req, res) => {
-  const allListings = await Listing.find({});
-  res.render("listings/index.ejs", { allListings });
+  const { search, minPrice, maxPrice, country } = req.query;
+  let query = {};
+
+  if (search) {
+    query.$or = [
+      { title: { $regex: search, $options: "i" } },
+      { description: { $regex: search, $options: "i" } },
+      { location: { $regex: search, $options: "i" } },
+    ];
+  }
+
+  if (minPrice || maxPrice) {
+    query.price = {};
+    if (minPrice) query.price.$gte = parseFloat(minPrice);
+    if (maxPrice) query.price.$lte = parseFloat(maxPrice);
+  }
+
+  if (country) {
+    query.country = { $regex: country, $options: "i" };
+  }
+
+  const allListings = await Listing.find(query);
+  res.render("listings/index.ejs", { allListings, search, minPrice, maxPrice, country });
 };
 
 module.exports.renderNewForm=(req, res) => {
@@ -17,7 +38,7 @@ module.exports.showListing=async (req, res) => {
   const listing = await Listing.findById(id).populate({path:"reviews",populate:{path:"author"},}).populate("owner");
   if(!listing){
     req.flash("error","Listing you requested for does not exist!");
-    res.redirect("/listings");
+    return res.redirect("/listings");
   }
   console.log(listing);
   res.render("listings/show.ejs", { listing });
@@ -48,7 +69,7 @@ module.exports.renderEditForm=async (req, res) => {
   const listing = await Listing.findById(id);
   if(!listing){
     req.flash("error","Listing you requested for does not exist!");
-    res.redirect("/listings");
+    return res.redirect("/listings");
   }
 
   let originalImageUrl=listing.image.url;

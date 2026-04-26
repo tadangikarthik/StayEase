@@ -9,7 +9,7 @@ max:5,
 },
 createdAt:{
 type:Date, 
-default:Date.now(),
+default:Date.now,
 },
 author:{
     type:Schema.Types.ObjectId,

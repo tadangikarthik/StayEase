@@ -17,3 +17,19 @@ rating:Joi.number().required().min(1).max(5),
 comment:Joi.string().required(),
 }).required(),
 });
+
+module.exports.bookingSchema = Joi.object({
+    booking: Joi.object({
+        checkInDate: Joi.date().required().iso(),
+        checkOutDate: Joi.date().required().iso().greater(Joi.ref('checkInDate')),
+    }).required(),
+});
+
+module.exports.paymentSchema = Joi.object({
+    payment: Joi.object({
+        razorpayPaymentId: Joi.string().required(),
+        razorpayOrderId: Joi.string().required(),
+        razorpaySignature: Joi.string().required(),
+    }).required(),
+});
+

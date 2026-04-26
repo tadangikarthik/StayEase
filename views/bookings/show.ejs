@@ -1,0 +1,149 @@
+<%layout("layouts/boilerplate")%>
+
+<div class="row mt-3 mt-md-5 mb-5">
+  <div class="col-12 col-sm-11 col-md-10 col-lg-8 mx-auto">
+    <div class="card shadow-lg" style="border-radius: 12px; border: none;">
+      <div class="card-header" style="background-color: #fe424d; color: white; border-radius: 12px 12px 0 0; padding: 20px;">
+        <h3 class="m-0" style="font-weight: 700; font-size: clamp(20px, 5vw, 28px);">📋 Booking Details</h3>
+      </div>
+      <div class="card-body p-3 p-sm-4 p-md-5">
+        <div class="row mb-4 mb-md-5 g-3 g-md-4">
+          <div class="col-12 col-md-6">
+            <h5 style="color: #222; font-weight: 700; margin-bottom: 15px; font-size: 16px;">📍 Listing Information</h5>
+            <p style="margin-bottom: 10px; font-size: 14px;"><strong style="color: #fe424d;">Title:</strong> <%= booking.listing.title %></p>
+            <p style="margin-bottom: 10px; font-size: 14px;"><strong style="color: #fe424d;">Location:</strong> <%= booking.listing.location %></p>
+            <p style="margin-bottom: 10px; font-size: 14px;"><strong style="color: #fe424d;">Country:</strong> <%= booking.listing.country %></p>
+            <p style="margin-bottom: 10px; font-size: 14px;"><strong style="color: #fe424d;">Price per Night:</strong> ₹<%= booking.listing.price %></p>
+          </div>
+          <div class="col-12 col-md-6">
+            <img src="<%= booking.listing.image.url %>" alt="<%= booking.listing.title %>" class="img-fluid w-100" style="height: 200px; object-fit: cover; border-radius: 8px;">
+          </div>
+        </div>
+
+        <hr style="border: 1px solid #e0e0e0; margin: 20px 0;">
+
+        <div class="row mb-4 mb-md-5 g-3 g-md-4">
+          <div class="col-12 col-md-6">
+            <h5 style="color: #222; font-weight: 700; margin-bottom: 15px; font-size: 16px;">📅 Booking Information</h5>
+            <p style="margin-bottom: 10px; font-size: 14px;"><strong style="color: #fe424d;">Check-In:</strong> <%= booking.checkInDate.toLocaleDateString() %> <%= booking.checkInDate.toLocaleTimeString() %></p>
+            <p style="margin-bottom: 10px; font-size: 14px;"><strong style="color: #fe424d;">Check-Out:</strong> <%= booking.checkOutDate.toLocaleDateString() %> <%= booking.checkOutDate.toLocaleTimeString() %></p>
+            <p style="margin-bottom: 10px; font-size: 14px;"><strong style="color: #fe424d;">Number of Nights:</strong> <%= booking.numberOfNights %></p>
+          </div>
+          <div class="col-12 col-md-6">
+            <h5 style="color: #222; font-weight: 700; margin-bottom: 15px; font-size: 16px;">💰 Price Breakdown</h5>
+            <p style="margin-bottom: 10px; font-size: 14px;"><strong style="color: #fe424d;">Price per Night:</strong> ₹<%= booking.listing.price %></p>
+            <p style="margin-bottom: 10px; font-size: 14px;"><strong style="color: #fe424d;">Number of Nights:</strong> <%= booking.numberOfNights %></p>
+            <hr style="border: 1px solid #e0e0e0; margin: 15px 0;">
+            <h4 style="color: #fe424d; font-weight: 700; margin: 0; font-size: 18px;"><strong>Total Amount: ₹<%= booking.totalPrice %></strong></h4>
+          </div>
+        </div>
+
+        <hr style="border: 1px solid #e0e0e0; margin: 20px 0;">
+
+        <div class="row mb-4 mb-md-5 g-3 g-md-4">
+          <div class="col-12 col-md-6">
+            <h5 style="color: #222; font-weight: 700; margin-bottom: 15px; font-size: 16px;">📌 Status</h5>
+            <p style="margin-bottom: 12px; font-size: 14px;">
+              <strong style="color: #222;">Booking Status:</strong>
+              <span class="badge" style="background-color: <%= booking.status === 'confirmed' ? '#4caf50' : booking.status === 'cancelled' ? '#fe424d' : '#ff9800' %>; color: white; padding: 8px 14px; border-radius: 20px; font-weight: 700; font-size: 12px;">
+                <%= booking.status.toUpperCase() %>
+              </span>
+            </p>
+            <p style="margin-bottom: 12px; font-size: 14px;">
+              <strong style="color: #222;">Payment Status:</strong>
+              <span class="badge" style="background-color: <%= booking.paymentStatus === 'completed' ? '#4caf50' : booking.paymentStatus === 'refunded' ? '#2196f3' : '#9e9e9e' %>; color: white; padding: 8px 14px; border-radius: 20px; font-weight: 700; font-size: 12px;">
+                <%= booking.paymentStatus.toUpperCase() %>
+              </span>
+            </p>
+          </div>
+          <div class="col-12 col-md-6">
+            <h5 style="color: #222; font-weight: 700; margin-bottom: 15px; font-size: 16px;">📆 Booking Dates</h5>
+            <p style="margin-bottom: 10px; font-size: 14px;"><strong style="color: #fe424d;">Booked On:</strong> <%= booking.createdAt.toLocaleDateString() %> <%= booking.createdAt.toLocaleTimeString() %></p>
+            <% if (booking.cancelledAt) { %>
+              <p style="margin-bottom: 10px; font-size: 14px;"><strong style="color: #fe424d;">Cancelled On:</strong> <%= booking.cancelledAt.toLocaleDateString() %> <%= booking.cancelledAt.toLocaleTimeString() %></p>
+              <% if (booking.refundAmount) { %>
+                <p style="margin-bottom: 10px; font-size: 14px;"><strong style="color: #fe424d;">Refund Amount:</strong> ₹<%= booking.refundAmount %></p>
+              <% } %>
+            <% } %>
+          </div>
+        </div>
+
+        <hr style="border: 1px solid #e0e0e0; margin: 20px 0;">
+
+        <div class="action-buttons" style="display: flex; gap: 10px; justify-content: flex-start; flex-wrap: wrap; flex-direction: column; flex-md-row;" class="flex-column flex-md-row">
+          <% if (booking.status !== 'cancelled' && booking.paymentStatus !== 'completed') { %>
+            <a href="/bookings/<%= booking._id %>/pay" class="btn w-100 w-md-auto" style="background-color: #fe424d; color: white; padding: 12px 25px; border: none; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 14px; cursor: pointer; transition: all 0.3s;">
+              <i class="fas fa-credit-card"></i> Complete Payment
+            </a>
+          <% } %>
+
+          <% if (booking.status === 'confirmed' || (booking.status === 'pending' && booking.paymentStatus === 'completed')) { %>
+            <form action="/bookings/<%= booking._id %>/cancel?_method=DELETE" method="POST" style="display: inline; flex: 1 1 auto; min-width: 100%; width: 100%;" onsubmit="return confirm('Are you sure you want to cancel this booking?');">
+              <button type="submit" class="btn w-100" style="background-color: #fe424d; color: white; padding: 12px 25px; border: none; border-radius: 8px; font-weight: 700; font-size: 14px; cursor: pointer; transition: all 0.3s;">
+                <i class="fas fa-times-circle"></i> Cancel Booking
+              </button>
+            </form>
+          <% } %>
+
+          <a href="/listings/<%= booking.listing._id %>" class="btn w-100 w-md-auto" style="background-color: #2196f3; color: white; padding: 12px 25px; border: none; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 14px; cursor: pointer; transition: all 0.3s;">
+            <i class="fas fa-arrow-left"></i> Back to Listing
+          </a>
+
+          <a href="/bookings/my/bookings" class="btn w-100 w-md-auto" style="background-color: #666; color: white; padding: 12px 25px; border: none; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 14px; cursor: pointer; transition: all 0.3s;">
+            <i class="fas fa-list"></i> My Bookings
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15) !important;
+  }
+
+  @media (max-width: 576px) {
+    .card-header {
+      padding: 15px !important;
+    }
+    
+    .card-body {
+      padding: 12px !important;
+    }
+
+    h3 {
+      font-size: 20px !important;
+    }
+
+    h5 {
+      font-size: 14px !important;
+      margin-bottom: 12px !important;
+    }
+
+    p {
+      font-size: 13px !important;
+      margin-bottom: 8px !important;
+    }
+
+    .action-buttons {
+      flex-direction: column !important;
+    }
+
+    .btn {
+      width: 100% !important;
+    }
+  }
+
+  @media (max-width: 768px) {
+    [style*="flex-md-row"] {
+      flex-direction: column !important;
+    }
+
+    .w-md-auto {
+      width: 100% !important;
+    }
+  }
+</style>
